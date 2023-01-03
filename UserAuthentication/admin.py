@@ -7,7 +7,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
 
         (None, {'fields': ('email', 'password',
-         'fname', 'phone', 'board', 'grade', 'institute', 'approved', 'room', 'last_login')}),
+         'fname', 'phone', 'board', 'grade', 'institute', 'website_url', 'instagram_url', 'facebook_url', 'telegram_url', 'youtube_url',  'approved', 'room', 'last_login')}),
         ('Permissions', {'fields': (
             'is_active',
             'is_staff',
@@ -22,12 +22,12 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 'classes': ('wide',),
-                'fields': ('email', 'password1', 'password2', 'fname', 'phone', 'board', 'grade', 'institute', 'room')
+                'fields': ('email', 'password1', 'password2', 'fname', 'phone', 'board', 'grade', 'institute', 'room', 'website_url', 'instagram_url', 'facebook_url', 'telegram_url', 'youtube_url')
             }
         ),
     )
 
-    list_display = ('email', 'fname', 'phone', 'board', 'grade', 'institute', 'approved', 'room', 'last_login')
+    list_display = ('email', 'fname', 'phone', 'board', 'grade', 'institute', 'approved', 'room', 'last_login', 'website_url', 'instagram_url', 'youtube_url', 'facebook_url', 'telegram_url')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     seach_fields = ('email',)
     ordering = ('email',)

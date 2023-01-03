@@ -48,6 +48,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     institute = models.CharField(max_length=500, unique=False, blank=True)
     approved = models.BooleanField(default=False, null=True, blank=True)
     room  = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
+
+    website_url = models.CharField(max_length=100, null=True, blank=True)
+    instagram_url = models.CharField(max_length=100, null=True, blank=True)
+    facebook_url = models.CharField(max_length=100, null=True, blank=True)
+    telegram_url = models.CharField(max_length=100, null=True, blank=True)
+    youtube_url = models.CharField(max_length=100, null=True, blank=True)
+
+
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True, blank=True)

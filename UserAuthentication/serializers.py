@@ -9,7 +9,7 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'fname', 'phone', 'grade', 'board', 'institute', 'approved', 'is_superuser', 'is_staff')
+        fields = ('id', 'email', 'password', 'fname', 'phone', 'grade', 'board', 'institute', 'approved', 'is_superuser', 'is_staff', 'website_url', 'instagram_url', 'telegram_url', 'youtube_url', 'facebook_url')
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -19,7 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         user = User.objects.create_user(email=validated_data['email'], password=validated_data['password'], fname=validated_data['fname'], phone=validated_data['phone'], institute=validated_data['institute'], board=validated_data['board'], 
         grade=validated_data['grade'],
-        is_superuser=validated_data['is_superuser'], is_staff=validated_data['is_staff'])
+        is_superuser=validated_data['is_superuser'], is_staff=validated_data['is_staff'], website_url=validated_data['websiteURL'], instagram_url=validated_data['instagramURL'], facebook_url=validated_data['facebookURL'], youtube_url=validated_data['youtubeURL'], telegram_url=validated_data['telegramURL'])
 
         return user
 

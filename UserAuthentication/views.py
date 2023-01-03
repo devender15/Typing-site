@@ -39,6 +39,8 @@ class RegisterUser(APIView):
     renderer_classes = [UserJsonRenderer]
 
     def post(self, request, *args, **kwargs):
+
+        print(request.data)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -113,7 +115,7 @@ class UpdateUserDetails(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        userActualPassword = request.user.password
+        userActualPassword = request.user.password 
         userId = request.data.get('userId')
         email = request.data.get('email')
         fname = request.data.get('fname')

@@ -6,20 +6,21 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'fname', 'phone', 'grade', 'board', 'institute', 'approved', 'is_superuser', 'is_staff', 'website_url', 'instagram_url', 'telegram_url', 'youtube_url', 'facebook_url')
+        fields = ('id', 'email', 'password', 'fname', 'phone', 'grade', 'board', 'institute', 'approved',
+                  'is_superuser', 'is_staff', 'websiteURL', 'instagramURL', 'telegramURL', 'youtubeURL', 'facebookURL')
         extra_kwargs = {
             'password': {'write_only': True}
         }
-    
 
     def create(self, validated_data):
         # print(validated_data)
-        user = User.objects.create_user(email=validated_data['email'], password=validated_data['password'], fname=validated_data['fname'], phone=validated_data['phone'], institute=validated_data['institute'], board=validated_data['board'], 
-        grade=validated_data['grade'],
-        is_superuser=validated_data['is_superuser'], is_staff=validated_data['is_staff'], website_url=validated_data['website_url'], instagram_url=validated_data['instagram_url'], facebook_url=validated_data['facebook_url'], youtube_url=validated_data['youtube_url'], telegram_url=validated_data['telegram_url'])
+        user = User.objects.create_user(email=validated_data['email'], password=validated_data['password'], fname=validated_data['fname'], phone=validated_data['phone'], institute=validated_data['institute'], board=validated_data['board'],
+                                        grade=validated_data['grade'],
+                                        is_superuser=validated_data['is_superuser'], is_staff=validated_data['is_staff'], websiteURL=validated_data['websiteURL'], instagramURL=validated_data['instagramURL'], facebookURL=validated_data['facebookURL'], youtubeURL=validated_data['youtubeURL'], telegramURL=validated_data['telegramURL'])
 
         return user
 
@@ -27,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
 
     email = serializers.CharField(max_length=255)
-    role =  serializers.CharField(max_length=10)
+    role = serializers.CharField(max_length=10)
 
     class Meta:
         model = User

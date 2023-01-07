@@ -49,11 +49,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     approved = models.BooleanField(default=False, null=True, blank=True)
     room  = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
 
-    website_url = models.CharField(max_length=100, null=True, blank=True)
-    instagram_url = models.CharField(max_length=100, null=True, blank=True)
-    facebook_url = models.CharField(max_length=100, null=True, blank=True)
-    telegram_url = models.CharField(max_length=100, null=True, blank=True)
-    youtube_url = models.CharField(max_length=100, null=True, blank=True)
+    websiteURL = models.CharField(max_length=100, null=True, blank=True)
+    instagramURL = models.CharField(max_length=100, null=True, blank=True)
+    facebookURL = models.CharField(max_length=100, null=True, blank=True)
+    telegramURL = models.CharField(max_length=100, null=True, blank=True)
+    youtubeURL = models.CharField(max_length=100, null=True, blank=True)
 
 
     is_staff = models.BooleanField(default=False)

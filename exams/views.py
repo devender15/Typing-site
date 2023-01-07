@@ -7,6 +7,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import *
+from Room.models import Room
+from Room.serializers import RoomSerializer
 
 # Create your views here.
 
@@ -82,3 +84,19 @@ class AddTest(APIView):
 
         else:
             return Response({"error": "Only admin and teacher are authorized to do this action!"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class GetLiveTests(APIView):
+
+    permission_classes = [AllowAny]
+    serializer_class = RoomSerializer
+    
+    def get(self, request, test_id):
+        
+        rooms = Room.objects.filter(test_id=test_id)
+        if(len(rooms) > 0):
+            serializer = self.serializer_class(rooms, many=True)
+            unexpired_rooms = [room for room in serializer.data if not room['isExpired']]
+            return Response(unexpired_rooms, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "No test is live!"}, status=status.HTTP_200_OK)

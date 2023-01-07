@@ -2,7 +2,7 @@ from dataclasses import field
 from rest_framework import serializers
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
+# from django.contrib.auth.hashers import make_password
 
 User = get_user_model()
 
@@ -16,10 +16,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     
 
     def create(self, validated_data):
-        
+        # print(validated_data)
         user = User.objects.create_user(email=validated_data['email'], password=validated_data['password'], fname=validated_data['fname'], phone=validated_data['phone'], institute=validated_data['institute'], board=validated_data['board'], 
         grade=validated_data['grade'],
-        is_superuser=validated_data['is_superuser'], is_staff=validated_data['is_staff'], website_url=validated_data['websiteURL'], instagram_url=validated_data['instagramURL'], facebook_url=validated_data['facebookURL'], youtube_url=validated_data['youtubeURL'], telegram_url=validated_data['telegramURL'])
+        is_superuser=validated_data['is_superuser'], is_staff=validated_data['is_staff'], website_url=validated_data['website_url'], instagram_url=validated_data['instagram_url'], facebook_url=validated_data['facebook_url'], youtube_url=validated_data['youtube_url'], telegram_url=validated_data['telegram_url'])
 
         return user
 

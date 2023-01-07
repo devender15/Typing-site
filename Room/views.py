@@ -8,12 +8,14 @@ from django.contrib.auth import get_user_model
 
 from .serializers import *
 from .models import *
+from exams.models import Tests
 
 
 # User model
 User = get_user_model()
 
 # Create your views here.
+
 
 class RoomView(ListAPIView):
     queryset = Room.objects.all()
@@ -36,19 +38,29 @@ class CreateRoomView(APIView):
 
             if (serializer.is_valid()):
                 exam = serializer.data.get('exam')
-                test = serializer.data.get('test')
+                test = serializer.data.get('test_name')
                 time = serializer.data.get('time')
                 paragraph = serializer.data.get('paragraph')
                 criteria = serializer.data.get('criteria')
-                host = request.user.email
+                host = request.user.fname
+
+                # getting test_id from Tests model
+                test_id = Tests.objects.get(name=test).id
 
                 # writing data to Room model
-                room = Room(host=host, exam=exam, test=test, time=time,
+                room = Room(host=host, exam=exam, test_name=test, test_id=test_id, time=time,
                             paragraph=paragraph, criteria=criteria)
                 room.save()
                 # saving room property in user's data
                 user.room = room
                 user.save(update_fields=['room'])
+
+                # changing the LIVE property of that particular test
+                test_queryset = Tests.objects.get(name=test)
+                live_val = test_queryset.live
+                live_val += 1
+                test_queryset.live = live_val
+                test_queryset.save(update_fields=['live'])
 
                 return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
 
@@ -73,7 +85,7 @@ class GetRoom(APIView):
             room = Room.objects.filter(code=code)
             if (len(room) > 0):
                 data = self.serializer_class(room[0]).data
-                data['is_host'] = request.user.email == room[0].host
+                data['is_host'] = request.user.fname == room[0].host
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Bad Request': 'Invalid Room Code'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -147,12 +159,20 @@ class LeaveRoom(APIView):
             room.save(update_fields=['participants'])
 
             # now checking if the user is host or not, if yes then we have to delete the room
-            host_id = request.user.email
+            host_id = request.user.fname
             room_results = Room.objects.filter(host=host_id)
             if (len(room_results) > 0):
-                room = room_results.last() # always get the latest queryset
+
+                room = room_results.last()  # always get the latest queryset
                 room.isExpired = True
                 room.save(update_fields=['isExpired'])
+
+                # changing the LIVE property of that particular test
+                test_queryset = Tests.objects.get(id=room.test_id)
+                live_val = test_queryset.live
+                live_val -= 1
+                test_queryset.live = 0 if(live_val < 0) else live_val
+                test_queryset.save(update_fields=['live'])
 
             return Response({'success': 'Leaved room successfully!'}, status=status.HTTP_200_OK)
         return Response({'error': 'You are not in any room!'}, status=status.HTTP_404_NOT_FOUND)

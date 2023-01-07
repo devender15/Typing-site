@@ -9,7 +9,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class CreateRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ('exam', 'test', 'time', 'paragraph', 'criteria')
+        fields = ('exam', 'test_name', 'time', 'paragraph', 'criteria')
 
 # class UpdateRoomSerializer(serializers.ModelSerializer):
 

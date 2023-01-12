@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.db import models
 from django.contrib.auth import get_user_model
 # from django.contrib.auth.hashers import make_password
+from .models import Performance
 
 User = get_user_model()
 
@@ -38,4 +39,10 @@ class LoginSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = '__all__'
+
+
+class PerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Performance
         fields = '__all__'

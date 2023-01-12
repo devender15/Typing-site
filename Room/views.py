@@ -7,7 +7,9 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 
 from .serializers import *
+from UserAuthentication.serializers import PerformanceSerializer
 from .models import *
+from UserAuthentication.models import Performance
 from exams.models import Tests
 
 
@@ -171,8 +173,22 @@ class LeaveRoom(APIView):
                 test_queryset = Tests.objects.get(id=room.test_id)
                 live_val = test_queryset.live
                 live_val -= 1
-                test_queryset.live = 0 if(live_val < 0) else live_val
+                test_queryset.live = 0 if (live_val < 0) else live_val
                 test_queryset.save(update_fields=['live'])
 
             return Response({'success': 'Leaved room successfully!'}, status=status.HTTP_200_OK)
         return Response({'error': 'You are not in any room!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ViewAllPerformances(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, roomId):
+        user = User.objects.get(email=request.user.email)
+        if (user.is_superuser or user.is_staff):
+            performances = Performance.objects.filter(room=roomId)
+            # print(performances[0].student.fname)
+            serializer = PerformanceSerializer(performances, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'Bad Request': 'Only Teacher and Admin are authorized to perform this operation!'}, status=status.HTTP_400_BAD_REQUEST)

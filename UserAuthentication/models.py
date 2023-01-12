@@ -72,3 +72,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_absolute_url(self):
         return "/users/%i" % (self.pk)
 
+
+class Performance(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    wpm = models.IntegerField(default=0, null=True)
+    cpm = models.IntegerField(default=0, null=True)
+    accuracy = models.IntegerField(default=0, null=True)
+    half_mistakes = models.IntegerField(default=0, null=True)
+    full_mistakes = models.IntegerField(default=0, null=True)
+    errors = models.IntegerField(default=0, null=True)
+    time_taken = models.IntegerField(default=0, null=True)
+    rank = models.IntegerField(default=0, null=True)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.student) + " " + str(self.recorded_at)

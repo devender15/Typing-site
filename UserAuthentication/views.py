@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.hashers import check_password
 
+from .models import Performance
 
 User = get_user_model()
 
@@ -158,3 +159,35 @@ class UpdatePassword(APIView):
 
         else:
             return Response({'status': 'error', 'msg': 'Invalid password entered!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class SaveProgress(APIView):
+    renderer_classes = [UserJsonRenderer]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        user = User.objects.get(id=request.user.id)
+        room = request.user.room
+        wpm = request.data.get('wpm', 0)
+        cpm = request.data.get('cpm', 0)
+        accuracy = request.data.get('accuracy', 0)
+        half_mistakes = request.data.get('half_mistakes', 0)
+        full_mistakes = request.data.get('full_mistakes', 0)
+        errors = request.data.get('errors', 0)
+        time_taken = request.data.get('time_taken', 0)
+        rank = request.data.get('rank', 0)
+
+        # saving the perform to the database
+        performance = Performance(student=user, room=room, wpm=wpm, cpm=cpm, accuracy=accuracy, half_mistakes=half_mistakes, full_mistakes=full_mistakes, errors=errors, time_taken=time_taken, rank=rank)
+        performance.save()
+
+        return Response({'success': 'Successfully progress saved !'}, status=status.HTTP_201_CREATED)
+
+
+class ViewProgress(ListAPIView):
+    queryset = Performance.objects.all()
+    serializer_class = PerformanceSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]

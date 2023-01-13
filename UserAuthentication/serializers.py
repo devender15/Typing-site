@@ -43,6 +43,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PerformanceSerializer(serializers.ModelSerializer):
+    student_id = serializers.IntegerField()
+    room_id = serializers.IntegerField()
     class Meta:
         model = Performance
         fields = '__all__'

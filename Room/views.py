@@ -5,9 +5,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+
 
 from .serializers import *
-from UserAuthentication.serializers import PerformanceSerializer
 from .models import *
 from UserAuthentication.models import Performance
 from exams.models import Tests
@@ -188,7 +189,20 @@ class ViewAllPerformances(APIView):
         user = User.objects.get(email=request.user.email)
         if (user.is_superuser or user.is_staff):
             performances = Performance.objects.filter(room=roomId)
-            # print(performances[0].student.fname)
-            serializer = PerformanceSerializer(performances, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            records = []
+            for performance in performances:
+
+                # converting our django model instance to standard python dictionary first
+                old_data = {**performance.__dict__}
+                # removing the state property from the dictionary
+                del old_data['_state']
+
+                student_data = {"student": {"name": performance.student.fname, "email": performance.student.email,
+                                        "phone": performance.student.phone, "institute": performance.student.institute, "board": performance.student.board}}
+
+                # joining two dictionaries together and then pushing to records array
+                records.append(old_data | student_data)
+
+            return JsonResponse(records, safe=False, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Only Teacher and Admin are authorized to perform this operation!'}, status=status.HTTP_400_BAD_REQUEST)

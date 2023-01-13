@@ -76,9 +76,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Performance(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    wpm = models.IntegerField(default=0, null=True)
-    cpm = models.IntegerField(default=0, null=True)
-    accuracy = models.IntegerField(default=0, null=True)
+    wpm = models.FloatField(default=None, null=True)
+    cpm = models.FloatField(default=None, null=True)
+    accuracy = models.FloatField(default=None, null=True)
     half_mistakes = models.IntegerField(default=0, null=True)
     full_mistakes = models.IntegerField(default=0, null=True)
     errors = models.IntegerField(default=0, null=True)

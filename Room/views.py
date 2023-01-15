@@ -206,3 +206,25 @@ class ViewAllPerformances(APIView):
 
             return JsonResponse(records, safe=False, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Only Teacher and Admin are authorized to perform this operation!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetRank(APIView):
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        user = User.objects.get(email=request.user.email)
+        room = user.room
+        print(room)
+        if (room != None):
+            performances = Performance.objects.filter(room=room.id)
+            # print(performances)
+            performances = sorted(performances, key=lambda x: x.wpm, reverse=True)
+            rank = 1
+            for performance in performances:
+                if (performance.student.email == user.email):
+                    return Response({"rank": rank}, status=status.HTTP_200_OK)
+                rank += 1
+            return Response({"rank": "Not Found"}, status=status.HTTP_200_OK)
+        return Response({"rank": "Not Found"}, status=status.HTTP_200_OK)

@@ -116,7 +116,7 @@ class UpdateUserDetails(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        userActualPassword = request.user.password 
+        userActualPassword = request.user.password
         userId = request.data.get('userId')
         email = request.data.get('email')
         fname = request.data.get('fname')
@@ -180,14 +180,25 @@ class SaveProgress(APIView):
         rank = request.data.get('rank', 0)
 
         # saving the perform to the database
-        performance = Performance(student=user, room=room, wpm=wpm, cpm=cpm, accuracy=accuracy, half_mistakes=half_mistakes, full_mistakes=full_mistakes, errors=errors, time_taken=time_taken, rank=rank)
+        performance = Performance(student=user, room=room, wpm=wpm, cpm=cpm, accuracy=accuracy,
+                                  half_mistakes=half_mistakes, full_mistakes=full_mistakes, errors=errors, time_taken=time_taken, rank=rank)
         performance.save()
 
         return Response({'success': 'Successfully progress saved !'}, status=status.HTTP_201_CREATED)
 
 
 class ViewProgress(ListAPIView):
-    queryset = Performance.objects.all()
     serializer_class = PerformanceSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            performances = Performance.objects.filter(
+                student=user).order_by('-id')
+            serializer = PerformanceSerializer(performances, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({'status': 'Something went wrong !'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

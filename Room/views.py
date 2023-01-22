@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from django.core.exceptions import MultipleObjectsReturned
 
 
 from .serializers import *
@@ -202,7 +203,7 @@ class ViewAllPerformances(APIView):
                 del old_data['_state']
 
                 student_data = {"student": {"name": performance.student.fname, "email": performance.student.email,
-                                        "phone": performance.student.phone, "institute": performance.student.institute, "board": performance.student.board}}
+                                            "phone": performance.student.phone, "institute": performance.student.institute, "board": performance.student.board}}
 
                 # joining two dictionaries together and then pushing to records array
                 records.append(old_data | student_data)
@@ -215,19 +216,33 @@ class GetRank(APIView):
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
         user = User.objects.get(email=request.user.email)
         room = user.room
-        print(room)
         if (room != None):
             performances = Performance.objects.filter(room=room.id)
-            # print(performances)
-            performances = sorted(performances, key=lambda x: x.wpm, reverse=True)
+            performances = sorted(
+                performances, key=lambda x: x.wpm, reverse=True)
             rank = 1
             for performance in performances:
                 if (performance.student.email == user.email):
+                    # saving the rank to the user's performance object
+                    # in case multiple object returns, so we are catching that exception
+                    try:
+                        performer = Performance.objects.get(student=user.id)
+                    except MultipleObjectsReturned:
+                        performer = Performance.objects.filter(
+                            student=user.id).last()
+                    performer.rank = rank
+                    performer.save(update_fields=['rank'])
                     return Response({"rank": rank}, status=status.HTTP_200_OK)
                 rank += 1
+
+            # saving the rank to the user's performance object
+            performer = Performance.objects.filter(student=user.id)
+            performer.rank = rank
+            performer.save(update_fields=['rank'])
+
             return Response({"rank": "Not Found"}, status=status.HTTP_200_OK)
         return Response({"rank": "Not Found"}, status=status.HTTP_200_OK)

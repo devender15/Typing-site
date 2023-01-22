@@ -45,14 +45,17 @@ class CreateRoomView(APIView):
                 time = serializer.data.get('time')
                 paragraph = serializer.data.get('paragraph')
                 criteria = serializer.data.get('criteria')
+                paragraphText = serializer.data.get('paragraphText')
                 host = request.user.fname
+
+                print(paragraphText)
 
                 # getting test_id from Tests model
                 test_id = Tests.objects.get(name=test).id
 
                 # writing data to Room model
                 room = Room(host=host, exam=exam, test_name=test, test_id=test_id, time=time,
-                            paragraph=paragraph, criteria=criteria)
+                            paragraph=paragraph, criteria=criteria, paragraphText=paragraphText)
                 room.save()
                 # saving room property in user's data
                 user.room = room

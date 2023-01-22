@@ -22,6 +22,7 @@ class Room(models.Model):
     time = models.IntegerField(default=60)
     paragraph = models.CharField(max_length=20, blank=True)
     criteria = models.TextField()
+    paragraphText = models.TextField(null=True)
     participants = models.IntegerField(default=1, null=True)
     isExpired = models.BooleanField(default=False, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

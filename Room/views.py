@@ -13,7 +13,7 @@ from django.db.models import Q
 from .serializers import *
 from .models import *
 from UserAuthentication.models import Performance
-from exams.models import Tests
+from exams.models import Tests, Exams
 
 
 # User model
@@ -120,9 +120,18 @@ class JoinRoom(APIView):
                 participants = room.participants
                 user.room = room
                 user.save(update_fields=['room'])
+
+                # incrementing the participants count
                 participants += 1
                 room.participants = participants
                 room.save(update_fields=['participants'])
+
+                # incrementing the exam attempts
+                exam = Exams.objects.get(id=room.exam)
+                old_attempts = exam.attempts 
+                exam.attempts = old_attempts + 1
+                exam.save(update_fields=['attempts'])
+
                 return Response({'message': 'Room joined !'}, status=status.HTTP_200_OK)
 
             return Response({'Bad Request': 'Invalid Room code !'}, status=status.HTTP_400_BAD_REQUEST)

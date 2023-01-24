@@ -177,11 +177,10 @@ class SaveProgress(APIView):
         full_mistakes = request.data.get('full_mistakes', 0)
         errors = request.data.get('errors', 0)
         time_taken = request.data.get('time_taken', 0)
-        rank = request.data.get('rank', 0)
 
         # saving the perform to the database
         performance = Performance(student=user, room=room, wpm=wpm, cpm=cpm, accuracy=accuracy,
-                                  half_mistakes=half_mistakes, full_mistakes=full_mistakes, errors=errors, time_taken=time_taken, rank=rank)
+                                  half_mistakes=half_mistakes, full_mistakes=full_mistakes, errors=errors, time_taken=time_taken)
         performance.save()
 
         return Response({'success': 'Successfully progress saved !'}, status=status.HTTP_201_CREATED)

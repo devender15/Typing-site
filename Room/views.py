@@ -7,6 +7,7 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.core.exceptions import MultipleObjectsReturned
+from django.db.models import Q
 
 
 from .serializers import *
@@ -226,7 +227,11 @@ class GetRank(APIView):
                 performances, key=lambda x: x.wpm, reverse=True)
             rank = 1
             for performance in performances:
-                if (performance.student.email == user.email):
+                
+                # filtering out same user if he/she enters more than one time
+                one_type = Performance.objects.filter(Q(room=room.id) & Q(student=user.id)).latest('recorded_at')
+                # matching the current user and checking if the recorded_at is latest or not
+                if (performance.student.email == user.email and performance.recorded_at == one_type.recorded_at):
                     # saving the rank to the user's performance object
                     # in case multiple object returns, so we are catching that exception
                     try:
@@ -236,7 +241,14 @@ class GetRank(APIView):
                             student=user.id).last()
                     performer.rank = rank
                     performer.save(update_fields=['rank'])
+    
+                    # if the current user is not the topper then sending topper's details
+                    if (rank != 1):
+                        topper = performances[0]
+                        return Response({"rank": rank, "topper": {"name": topper.student.fname, "wpm": topper.wpm, "errors": topper.errors, "accuracy": topper.accuracy, "time_taken": topper.time_taken}}, status=status.HTTP_200_OK)
+                    
                     return Response({"rank": rank}, status=status.HTTP_200_OK)
+
                 rank += 1
 
             # saving the rank to the user's performance object

@@ -117,18 +117,22 @@ class Rate(APIView):
 
         if (isStudent):
             user = request.user
-            exam_id = request.data.get("exam")
+            exam_id = int(request.data.get("exam"))
+            filtered_exam = Exams.objects.get(id=exam_id)
+
+            already_users = [] if not isinstance(filtered_exam.user_rated, list) else filtered_exam.user_rated
 
             # checking whether this user has already rated this exam or not
 
-            if (Exams.objects.filter(Q(id=exam_id) & Q(user_rated=user.id)).exists()):
+            if (user.id in already_users):
                 return Response({"error": "You have already gave rating to this exam!"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
             else:
                 user_ratings = request.data.get("ratings")
 
                 exam = Exams.objects.get(id=exam_id)
-                exam.user_rated = user
+                already_users.append(user.id)
+                exam.user_rated = already_users
 
                 # we have to add average ratings to the exam
                 ratings_arr = [] if exam.ratings == 0 else exam.ratings
@@ -142,3 +146,23 @@ class Rate(APIView):
 
         else:
             return Response({"error": "Only student is authorized to do this action!"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CheckRated(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, exam_id):
+
+        try:
+            exam = Exams.objects.get(id=exam_id)
+            user = request.user.id
+
+            already_rated = [] if not isinstance(exam.user_rated, list) else exam.user_rated 
+            
+            if (user in already_rated):
+                return Response({"success": "You have already rated this exam!"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "You have not rated this exam!"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "Something went wrong!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

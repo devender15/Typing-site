@@ -9,4 +9,5 @@ urlpatterns = [
     path('get_live_tests/<int:test_id>', GetLiveTests.as_view()),
     path('add_test', AddTest.as_view()),
     path('rate', Rate.as_view()),
+    path('check-rated/<int:exam_id>', CheckRated.as_view()),
 ]

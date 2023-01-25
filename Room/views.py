@@ -267,3 +267,19 @@ class GetRank(APIView):
 
             return Response({"rank": "Not Found"}, status=status.HTTP_200_OK)
         return Response({"rank": "Not Found"}, status=status.HTTP_200_OK)
+
+
+class LiveRoom(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = RoomSerializer
+
+    def get(self, request, format=None):
+        user = User.objects.get(email=request.user.email)
+
+        if (user.is_staff):
+            rooms = Room.objects.filter(Q(isExpired=False) & Q(host=user.fname))
+            print(rooms)
+            serializer = self.serializer_class(rooms, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'Bad Request': 'Only Teacher and Admin are authorized to perform this operation!'}, status=status.HTTP_400_BAD_REQUEST)

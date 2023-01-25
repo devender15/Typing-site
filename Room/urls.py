@@ -11,5 +11,5 @@ urlpatterns = [
     path('leave-room', LeaveRoom.as_view()),
     path('view-scores/<int:roomId>', ViewAllPerformances.as_view()),
     path('get-rank', GetRank.as_view()),
-    # path('update-room', UpdateView.as_view())
+    path('live-room', LiveRoom.as_view()),
 ]

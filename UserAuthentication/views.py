@@ -117,20 +117,19 @@ class UpdateUserDetails(APIView):
 
     def post(self, request):
         userActualPassword = request.user.password
-        userId = request.data.get('userId')
         email = request.data.get('email')
         fname = request.data.get('fname')
-        phone = request.data.get('phone')
+        phone = request.data.get('phone', "")
         password = request.data.get('password')
 
         match = check_password(password, userActualPassword)
 
         if (match):
-            user = User.objects.get(id=userId)
+            user = User.objects.get(id=request.user.id)
             user.email = email
             user.fname = fname
             user.phone = phone
-            user.save()
+            user.save(update_fields=['email', 'fname', 'phone'])
 
             return Response({'status': 'success', 'msg': 'Successfully details updated !'}, status=status.HTTP_201_CREATED)
         else:

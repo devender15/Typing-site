@@ -44,7 +44,7 @@ class AddExam(APIView):
             isExist = Exams.objects.filter(name=exam_name).exists()
 
             if (not isExist):
-                exam = Exams(name=exam_name)
+                exam = Exams(name=exam_name, teacher=request.user.fname)
                 exam.save()
                 return Response({"success": "Exam added successfully!"}, status=status.HTTP_201_CREATED)
             else:

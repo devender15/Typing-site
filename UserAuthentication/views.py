@@ -205,7 +205,7 @@ class ViewProgress(ListAPIView):
 class Teachers(APIView):
     renderer_classes = [UserJsonRenderer]
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:

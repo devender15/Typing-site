@@ -230,6 +230,7 @@ class GetRank(APIView):
     def get(self, request):
         user = User.objects.get(email=request.user.email)
         room = user.room
+        print(room.code)
         if (room != None):
             performances = Performance.objects.filter(room=room.id)
             performances = sorted(
@@ -279,7 +280,6 @@ class LiveRoom(APIView):
 
         if (user.is_staff):
             rooms = Room.objects.filter(Q(isExpired=False) & Q(host=user.fname))
-            print(rooms)
             serializer = self.serializer_class(rooms, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Only Teacher and Admin are authorized to perform this operation!'}, status=status.HTTP_400_BAD_REQUEST)

@@ -10,5 +10,6 @@ urlpatterns = [
     path('update-user', UpdateUserDetails.as_view()),
     path('change-password', UpdatePassword.as_view()),
     path('save-progress', SaveProgress.as_view()),
-    path('view-progress', ViewProgress.as_view())
+    path('view-progress', ViewProgress.as_view()),
+    path('teachers-list', Teachers.as_view()),
 ]

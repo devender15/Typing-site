@@ -200,3 +200,18 @@ class ViewProgress(ListAPIView):
         except Exception as e:
             print(e)
             return Response({'status': 'Something went wrong !'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class Teachers(APIView):
+    renderer_classes = [UserJsonRenderer]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            teachers = User.objects.filter(is_staff=True)
+            serializer = UserSerializer(teachers, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({'status': 'Something went wrong !'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

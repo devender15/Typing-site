@@ -9,6 +9,7 @@ class Exams(models.Model):
     ratings = models.JSONField(null=True, blank=True) # it is an array of ratings
     rating = models.FloatField(null=True, blank=True, default=0)
     user_rated = models.JSONField(null=True, blank=True) # it is an array of user ids
+    teacher = models.CharField(max_length=100, null=True, blank=True)
     added_on = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
